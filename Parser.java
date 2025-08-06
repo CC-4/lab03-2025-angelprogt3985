@@ -9,7 +9,6 @@
 
 import java.util.LinkedList;
 import java.util.Stack;
-
 public class Parser {
 
     // Puntero next que apunta al siguiente token
@@ -119,7 +118,7 @@ public class Parser {
         /* Casi todo el codigo para esta seccion se vera en clase */
     	
     	// Si no hay operandos automaticamente ingresamos op al stack
-
+        
     	// Si si hay operandos:
     		// Obtenemos la precedencia de op
         	// Obtenemos la precedencia de quien ya estaba en el stack
@@ -132,9 +131,31 @@ public class Parser {
     private boolean S() {
         return E() && term(Token.SEMI);
     }
+    
 
     private boolean E() {
-        return false;
+        return e() && T();
+    }
+    private boolean e() {
+        return (term(Token.PLUS) && T() && e()) || (term(Token.MINUS) && T() && e()) || condicion();
+    }
+    private boolean T() {
+        return F() && t();
+    }
+     private boolean t() {
+        return (term(Token.MULT) && F() && t()) || (term(Token.DIV) && F() && t()) || (term(Token.MOD) && F() && t()) ||condicion();
+    }
+    private boolean F() {
+        return G() && f();
+    }
+    private boolean f() {
+        return (term(Token.EXP) && G() && f()) || condicion();
+    }
+    private boolean G() {
+        return (term(Token.MINUS) && G()) || (term(Token.LPAREN) && E() && term(Token.RPAREN)) || term(Token.NUMBER);
+    }
+    private boolean condicion() {
+        return true;
     }
 
     /* TODO: sus otras funciones aqui */
