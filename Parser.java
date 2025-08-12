@@ -4,6 +4,26 @@
 
     Clase que representa el parser
 
+         S ::= E ;
+
+        E ::= T + E
+        | T - E
+        | T ;
+
+        T ::= F * T
+            | F / T
+            | F % T
+            | F ;
+
+        F ::= U ^ F
+            | U ;
+
+        U ::= - U
+            | P ;
+
+        P ::= ( E )
+            | number ;
+
     Actualizado: agosto de 2021, Luis Cu
 */
 
@@ -132,31 +152,64 @@ public class Parser {
         return E() && term(Token.SEMI);
     }
     
-
     private boolean E() {
-        return e() && T();
+        if (!T()) {
+            return false;
+        }
+        if (term(Token.PLUS)) {
+            return E();
+        }
+        if (term(Token.MINUS)) {
+            return E();
+        }
+        return true;  
     }
-    private boolean e() {
-        return (term(Token.PLUS) && T() && e()) || (term(Token.MINUS) && T() && e()) || condicion();
-    }
+
     private boolean T() {
-        return F() && t();
-    }
-     private boolean t() {
-        return (term(Token.MULT) && F() && t()) || (term(Token.DIV) && F() && t()) || (term(Token.MOD) && F() && t()) ||condicion();
+         if (!F()) {
+            return false;
+        }
+        if (term(Token.MULT)) {
+            return T();
+        }
+        if (term(Token.DIV)) {
+            return T();
+        }
+        if (term(Token.MOD)) {
+            return T();
+        }
+        return true;
     }
     private boolean F() {
-        return G() && f();
-    }
-    private boolean f() {
-        return (term(Token.EXP) && G() && f()) || condicion();
-    }
-    private boolean G() {
-        return (term(Token.MINUS) && G()) || (term(Token.LPAREN) && E() && term(Token.RPAREN)) || term(Token.NUMBER);
-    }
-    private boolean condicion() {
+        if (!U()) {
+            return false;
+        }
+        if (term(Token.EXP)) {
+            return F();
+        }
         return true;
     }
 
+    private boolean U() {
+         if (term(Token.MINUS)) {
+            return U();
+        } else {
+            return P();
+        }
+    }
+
+    private boolean P() {
+        if (term(Token.LPAREN)) {
+            if (E()) {
+                return term(Token.RPAREN);
+            }
+            return false;
+        }
+        if (term(Token.NUMBER)) {
+            return true;
+        }
+        return false;
+    }
+    
     /* TODO: sus otras funciones aqui */
 }
